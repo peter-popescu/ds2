@@ -1,5 +1,3 @@
-#trakcs that if source is 0, everything else is 0.
-
 import random
 import datetime
 
@@ -16,26 +14,19 @@ def generate_log(num_entries, filename):
         file.write("# operator_id,operator_instance_id,total_number_of_operator_instances,epoch_timestamp,true_processing_rate,true_output_rate,observed_processing_rate,observed_output_rate\n")
         
         for _ in range(num_entries):
-            source_output_rate = random.uniform(0, 200000)  # Determine source output rate for each entry set
-
             for operator_id, num_instances in operator_types:
                 for instance_id in range(1, num_instances + 1):
                     epoch_timestamp = int(start_time.timestamp() * 1000)
-
                     if operator_id == "Source: Custom Source":
-                        true_processing_rate = 0  # Source does not process data
-                        true_output_rate = source_output_rate
+                        true_processing_rate = 0
+                        true_output_rate = random.uniform(50000, 200000)
                     elif operator_id == "Splitter FlatMap":
-                        if source_output_rate > 0:
-                            true_processing_rate = random.uniform(40000, 150000)
-                            true_output_rate = random.uniform(200000, 1600000)
-                        else:
-                            true_processing_rate = 0
-                            true_output_rate = 0
+                        true_processing_rate = random.uniform(40000, 150000)
+                        true_output_rate = random.uniform(200000, 1600000)
                     else:  # Count -> Latency Sink
-                        true_processing_rate = random.uniform(1000000, 2500000) if source_output_rate > 0 else 0
+                        true_processing_rate = random.uniform(1000000, 2500000)
                         true_output_rate = 0
-
+                    
                     observed_processing_rate = max(0, true_processing_rate * random.uniform(0.5, 1.1))
                     observed_output_rate = max(0, true_output_rate * random.uniform(0.5, 1.1))
                     
